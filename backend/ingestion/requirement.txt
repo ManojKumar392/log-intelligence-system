@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic
+aiokafka
+python-dotenv
+slowapi

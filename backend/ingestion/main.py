@@ -4,11 +4,12 @@ from .producer import start_producer, stop_producer, send_log_to_kafka
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 import logging
+from slowapi.util import get_remote_address
 
 app = FastAPI(title="Log Ingestion Service")
 
 # Rate Limiting: 5 requests per second per IP
-limiter = Limiter(key_func=lambda req: req.client.host)
+limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
 
@@ -17,13 +18,13 @@ logging.basicConfig(level=logging.INFO)
 
 
 # Start/stop Kafka producer
-# @app.on_event("startup")
-# async def startup():
-#     await start_producer()
+@app.on_event("startup")
+async def startup():
+    await start_producer()
 
-# @app.on_event("shutdown")
-# async def shutdown():
-#     await stop_producer()
+@app.on_event("shutdown")
+async def shutdown():
+    await stop_producer()
 
 @app.get("/ping")
 def ping():

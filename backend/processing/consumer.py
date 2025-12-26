@@ -51,7 +51,11 @@ def process_log(log: dict) -> dict | None:
         category = "security"
 
     # 6️⃣ Enrich metadata
-    metadata = log.get("metadata", {})
+    metadata = log.get("metadata")
+
+    if not isinstance(metadata, dict):
+        metadata = {}
+
     metadata.setdefault("source_host", log.get("host", "unknown"))
 
     processed_log = {
